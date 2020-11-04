@@ -1,0 +1,21 @@
+todo:
+
+what am i?
+	inspired by arcade game "Asteroids" (1979) in display style, movement and objective
+	-display style
+		vector graphic
+		simple polygons for everything
+	-movement and control
+		no friction; object moves -> keeps moving; object spins -> keeps spinning
+		object is pushed or hit -> velocity changes
+		
+		at least two styles of controlling i can think of off the top of my head
+			1:  one dedicated button for accelerating in direction of orientation
+				and two buttons for changing angular velocity (one for either direction, obviously)
+			2:  there are two thrusters on each side of the ship
+				one button controls one thruster. if only one thruster thrusts, then thrust is unbalanced
+				and the ship rotates, but also accelerates in direction of orientation. 
+				
+		
+		player can shoot. (pew pew). maybe bullets or radioactive bullets or cool lazer or explosive rockets or-
+		
