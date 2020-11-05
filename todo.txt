@@ -14,8 +14,13 @@ what am i?
 				and two buttons for changing angular velocity (one for either direction, obviously)
 			2:  there are two thrusters on each side of the ship
 				one button controls one thruster. if only one thruster thrusts, then thrust is unbalanced
-				and the ship rotates, but also accelerates in direction of orientation. 
-				
+				and the ship rotates, but also accelerates in direction of orientation.
+		
+		either i have to decide for one of the two styles, or implement both and make them switchable.
 		
 		player can shoot. (pew pew). maybe bullets or radioactive bullets or cool lazer or explosive rockets or-
-		
+	-objective
+		the objective of asteroids is not dying and achieving a high score.
+		i think that's a good objective, so i might borrow it,
+		but adding additional features to make it my own, of course.
+	
