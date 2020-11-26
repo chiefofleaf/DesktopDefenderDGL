@@ -22,6 +22,8 @@ type
     property Z: Single read FZ write FZ;
     property R: Single read FR write FR;
 
+    procedure Reset;
+
     procedure Update(DT: Double); override;
     procedure Render; override;
   end;
@@ -36,6 +38,18 @@ procedure TWorldObject.Render;
 begin
   glTranslatef(FX, FY, FZ);
   glRotatef(FR, 0, 0, 1);
+end;
+
+procedure TWorldObject.Reset;
+begin
+  FX := 0;
+  FY := 0;
+  FZ := 0;
+  FR := 0;
+  FVX := 0;
+  FVY := 0;
+  FVZ := 0;
+  FVR := 0;
 end;
 
 procedure TWorldObject.Update(DT: Double);

@@ -216,8 +216,19 @@ begin
 end;
 
 procedure TBackgroundRenderer.RenderBackground;
+var
+  i: Integer;
 begin
+  glPointSize(2);
 
+  glScalef(5000, 5000, 5000);
+  glTranslatef(-0.5, -0.5, -0.1);
+  glBegin(GL_POINTS);
+    glColor3f(1, 1, 1);
+    for i := 0 to GAME_BACKGROUND_STARCOUNT - 1 do begin
+      glVertex3f(FStars[i].X, FStars[i].Y, FStars[i].Z);
+    end;
+  glEnd;
 end;
 
 end.

@@ -68,6 +68,10 @@ begin
   if (GetKeyState(VK_RIGHT) AND $80) <> 0 then
     FPlayer.Thrust(ttSpinR, DT);
 
+  if (GetKeyState(VK_SPACE) AND $80) <> 0 then begin
+    FPlayer.Reset;
+  end;
+
   for i := 0 to Length(FObjs) - 1 do begin
     FObjs[i].Update(DT);
   end;
