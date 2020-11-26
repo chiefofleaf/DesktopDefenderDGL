@@ -2,8 +2,8 @@ object fmMain: TfmMain
   Left = 0
   Top = 0
   Caption = 'asdf'
-  ClientHeight = 299
-  ClientWidth = 635
+  ClientHeight = 752
+  ClientWidth = 1209
   Color = clBtnFace
   TransparentColor = True
   TransparentColorValue = 65793

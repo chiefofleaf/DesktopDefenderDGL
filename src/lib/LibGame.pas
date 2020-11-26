@@ -40,6 +40,7 @@ type
 
     procedure Update(DT: Double);
     procedure Render;
+    procedure HandleError;
   public
     property FPS: Integer read FLastFPS;
 
@@ -134,6 +135,7 @@ begin
 
     Update(diff);
     Render;
+    HandleError;
 
     FFrames := FFrames + 1;
 
@@ -151,6 +153,18 @@ begin
   Done := False;
 end;
 
+procedure TGame.HandleError;
+var
+  error: Cardinal;
+  errorString: string;
+begin
+  error := glGetError;
+
+  if error <> GL_NO_ERROR then begin
+    errorString := gluErrorString(error);
+  end;
+end;
+
 procedure TGame.Update(DT: Double);
 begin
   FObjectHandler.UpdateAll(DT);
@@ -163,7 +177,7 @@ begin
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity;
 
-  FCam.SetCamera(0, 0);     //Player.X, Player.Y
+  FCam.SetCamera(FObjectHandler.Player.X, FObjectHandler.Player.Y);
 
   glPushMatrix;
     FBackgroundRenderer.RenderBackground;

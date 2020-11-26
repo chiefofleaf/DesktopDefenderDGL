@@ -7,7 +7,9 @@ uses
   LibGame in 'src\lib\LibGame.pas',
   LibShared in 'src\lib\LibShared.pas',
   LibCamera2D in 'src\lib\LibCamera2D.pas',
-  LibRenderableObject in 'src\lib\objects\LibRenderableObject.pas';
+  LibRenderableObject in 'src\lib\objects\LibRenderableObject.pas',
+  LibPlayer in 'src\lib\objects\LibPlayer.pas',
+  LibObjectHandler in 'src\lib\objects\LibObjectHandler.pas';
 
 {$R *.res}
 

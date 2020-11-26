@@ -11,6 +11,8 @@ type
     FPlayer: TPlayer;
     FObjs: TRenderableArray;
   public
+    property Player: TPlayer read FPlayer;
+
     constructor Create;
     destructor Destroy; override;
 
@@ -21,7 +23,7 @@ type
 implementation
 
 uses
-  DGLOpenGL;
+  DGLOpenGL, Winapi.Windows;
 
 { TObjectHandler }
 
@@ -42,7 +44,9 @@ var
   i: Integer;
 begin
   for i := 0 to Length(FObjs) - 1 do begin
+    glPushMatrix;
     FObjs[i].Render;
+    glPopMatrix;
   end;
 
   glBegin(GL_TRIANGLES);
@@ -57,6 +61,13 @@ procedure TObjectHandler.UpdateAll(DT: Double);
 var
   i: Integer;
 begin
+  if (GetKeyState(VK_UP) AND $80) <> 0 then
+    FPlayer.Thrust(ttMain, DT);
+  if (GetKeyState(VK_LEFT) AND $80) <> 0 then
+    FPlayer.Thrust(ttSpinL, DT);
+  if (GetKeyState(VK_RIGHT) AND $80) <> 0 then
+    FPlayer.Thrust(ttSpinR, DT);
+
   for i := 0 to Length(FObjs) - 1 do begin
     FObjs[i].Update(DT);
   end;

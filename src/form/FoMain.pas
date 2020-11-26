@@ -25,10 +25,16 @@ var
 
 implementation
 
+uses
+  LibShared;
+
 {$R *.dfm}
 
 procedure TfmMain.FormCreate(Sender: TObject);
 begin
+  TransparentColor := DISPLAY_TRANSPARENT;
+  TransparentColorValue := DISPLAY_TRANSPARENT_COLOR;
+
   FGame := TGame.Create(Handle);
   Application.OnIdle := FGame.GameLoop;
   FGame.Start;
