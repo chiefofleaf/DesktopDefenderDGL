@@ -31,7 +31,7 @@ begin
   CurX := CurX + CAMERA_MOVE_SPEED * (X - CurX);
   CurY := CurY + CAMERA_MOVE_SPEED * (Y - CurY);
 
-  glTranslatef(-CurX, -CurY, -5);
+  glTranslatef(-CurX, -CurY, -20);
 end;
 
 end.

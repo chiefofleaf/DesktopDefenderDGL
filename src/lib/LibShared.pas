@@ -10,6 +10,10 @@ const
 
   GAME_BACKGROUND_STARCOUNT = 500;
 
+  GAME_PLAYER_THRUST = 1;
+  GAME_PLAYER_THRUST_ROT = 1;
+
+
 implementation
 
 end.

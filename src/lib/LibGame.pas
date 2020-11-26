@@ -5,16 +5,9 @@ interface
 uses
   Winapi.Windows, DGLOpenGL,
 
-  LibCamera2D;
+  LibCamera2D, LibObjectHandler;
 
 type
-  IRenderableObject = interface
-    procedure Update(DT: Double);
-    procedure Render(DC: HDC);
-  end;
-
-  TRenderableArray = array of IRenderableObject;
-
   TBackgroundStar = record
     X, Y, Z: Single;
   end;
@@ -25,17 +18,6 @@ type
   public
     constructor Create;
     procedure RenderBackground;
-  end;
-
-  TObjectHandler = class
-  private
-    DC: HDC;
-    FObjs: TRenderableArray;
-  public
-    constructor Create(DeviceContext: HDC);
-
-    procedure UpdateAll(DT: Double);
-    procedure RenderAll;
   end;
 
   TGame = class
@@ -67,7 +49,7 @@ type
 
     procedure Resize(NewWidth, NewHeight: Integer);
 
-    procedure IdleHandler(Sender: TObject; var Done: Boolean);
+    procedure GameLoop(Sender: TObject; var Done: Boolean);
     procedure Start;
     procedure Stop;
   end;
@@ -90,14 +72,13 @@ begin
   if not InitOpenGL then
     DoNothing;
 
-
   DC:= GetDC(FHandle);
   RC := CreateRenderingContext(DC, [opDoubleBuffered], 32, 24, 0,0,0, 0);
   ActivateRenderingContext(DC, RC);
   SetupGL;
 
   FCam := TCamera2D.Create;
-  FObjectHandler := TObjectHandler.Create(DC);
+  FObjectHandler := TObjectHandler.Create;
   FBackgroundRenderer := TBackgroundRenderer.Create;
 
   QueryPerformanceCounter(FLastTime);
@@ -138,10 +119,10 @@ begin
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity;
 
-  IdleHandler(nil, b);
+  GameLoop(nil, b);
 end;
 
-procedure TGame.IdleHandler(Sender: TObject; var Done: Boolean);
+procedure TGame.GameLoop(Sender: TObject; var Done: Boolean);
 var
   thisTime, fr: Int64;
   diff: Double;
@@ -150,7 +131,6 @@ begin
     QueryPerformanceCounter(thisTime);
     QueryPerformanceFrequency(fr);
     diff := (thisTime - FLastTime) / fr;
-
 
     Update(diff);
     Render;
@@ -185,8 +165,13 @@ begin
 
   FCam.SetCamera(0, 0);     //Player.X, Player.Y
 
-  FBackgroundRenderer.RenderBackground;
-  FObjectHandler.RenderAll;
+  glPushMatrix;
+    FBackgroundRenderer.RenderBackground;
+  glPopMatrix;
+
+  glPushMatrix;
+    FObjectHandler.RenderAll;
+  glPopMatrix;
 
   SwapBuffers(DC);
 end;
@@ -199,38 +184,6 @@ end;
 procedure TGame.Stop;
 begin
   FStarted := False;
-end;
-
-{ TObjectHandler }
-
-constructor TObjectHandler.Create(DeviceContext: HDC);
-begin
-  DC := DeviceContext;
-end;
-
-procedure TObjectHandler.RenderAll;
-var
-  i: Integer;
-begin
-  for i := 0 to Length(FObjs) - 1 do begin
-    FObjs[i].Render(DC);
-  end;
-
-  glBegin(GL_TRIANGLES);
-    glColor3f(1, 0, 0); glVertex3f(-1, 1, 0);
-    glColor3f(0, 1, 0); glVertex3f(0, -1, 0);
-    glColor3f(0, 0, 1); glVertex3f(1, 1, 0);
-  glEnd;
-
-end;
-
-procedure TObjectHandler.UpdateAll(DT: Double);
-var
-  i: Integer;
-begin
-  for i := 0 to Length(FObjs) - 1 do begin
-    FObjs[i].Update(DT);
-  end;
 end;
 
 { TBackgroundRenderer }

@@ -6,7 +6,8 @@ uses
   FoMain in 'src\form\FoMain.pas' {fmMain},
   LibGame in 'src\lib\LibGame.pas',
   LibShared in 'src\lib\LibShared.pas',
-  LibCamera2D in 'src\lib\LibCamera2D.pas';
+  LibCamera2D in 'src\lib\LibCamera2D.pas',
+  LibRenderableObject in 'src\lib\objects\LibRenderableObject.pas';
 
 {$R *.res}
 

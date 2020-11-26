@@ -30,7 +30,7 @@ implementation
 procedure TfmMain.FormCreate(Sender: TObject);
 begin
   FGame := TGame.Create(Handle);
-  Application.OnIdle := FGame.IdleHandler;
+  Application.OnIdle := FGame.GameLoop;
   FGame.Start;
 end;
 
