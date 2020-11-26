@@ -2,10 +2,11 @@ program DesktopDefenderDGL;
 
 uses
   Vcl.Forms,
-  FoMain in 'FoMain.pas' {fmMain},
   DGLOpenGL in '..\DGL\DGLOpenGL.pas',
-  LibShared in 'LibShared.pas',
-  LibGame in 'LibGame.pas';
+  FoMain in 'src\form\FoMain.pas' {fmMain},
+  LibGame in 'src\lib\LibGame.pas',
+  LibShared in 'src\lib\LibShared.pas',
+  LibCamera2D in 'src\lib\LibCamera2D.pas';
 
 {$R *.res}
 

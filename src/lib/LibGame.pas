@@ -3,7 +3,9 @@ unit LibGame;
 interface
 
 uses
-  Winapi.Windows, DGLOpenGL;
+  Winapi.Windows, DGLOpenGL,
+
+  LibCamera2D;
 
 type
   IRenderableObject = interface
@@ -12,6 +14,18 @@ type
   end;
 
   TRenderableArray = array of IRenderableObject;
+
+  TBackgroundStar = record
+    X, Y, Z: Single;
+  end;
+
+  TBackgroundRenderer = class
+  private
+    FStars: array of TBackgroundStar;
+  public
+    constructor Create;
+    procedure RenderBackground;
+  end;
 
   TObjectHandler = class
   private
@@ -31,6 +45,8 @@ type
     DC: HDC;
 
     FStarted: Boolean;
+    FCam: TCamera2D;
+    FBackgroundRenderer: TBackgroundRenderer;
     FObjectHandler: TObjectHandler;
 
     FLastTime: Int64;
@@ -40,6 +56,7 @@ type
 
     procedure SetupGL;
 
+    procedure Update(DT: Double);
     procedure Render;
   public
     property FPS: Integer read FLastFPS;
@@ -79,7 +96,9 @@ begin
   ActivateRenderingContext(DC, RC);
   SetupGL;
 
+  FCam := TCamera2D.Create;
   FObjectHandler := TObjectHandler.Create(DC);
+  FBackgroundRenderer := TBackgroundRenderer.Create;
 
   QueryPerformanceCounter(FLastTime);
   FTimeCounter := 0;
@@ -93,7 +112,9 @@ begin
   DestroyRenderingContext(RC);
   ReleaseDC(FHandle, DC);
 
+  FCam.Free;
   FObjectHandler.Free;
+  FBackgroundRenderer.Free;
 
   inherited;
 end;
@@ -130,8 +151,9 @@ begin
     QueryPerformanceFrequency(fr);
     diff := (thisTime - FLastTime) / fr;
 
-    FObjectHandler.UpdateAll(diff);
-    FObjectHandler.RenderAll;
+
+    Update(diff);
+    Render;
 
     FFrames := FFrames + 1;
 
@@ -149,9 +171,24 @@ begin
   Done := False;
 end;
 
+procedure TGame.Update(DT: Double);
+begin
+  FObjectHandler.UpdateAll(DT);
+end;
+
 procedure TGame.Render;
 begin
+  glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity;
+
+  FCam.SetCamera(0, 0);     //Player.X, Player.Y
+
+  FBackgroundRenderer.RenderBackground;
   FObjectHandler.RenderAll;
+
+  SwapBuffers(DC);
 end;
 
 procedure TGame.Start;
@@ -179,20 +216,12 @@ begin
     FObjs[i].Render(DC);
   end;
 
-  glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity;
-
-  glTranslatef(0, 0, -5);
-
   glBegin(GL_TRIANGLES);
     glColor3f(1, 0, 0); glVertex3f(-1, 1, 0);
     glColor3f(0, 1, 0); glVertex3f(0, -1, 0);
     glColor3f(0, 0, 1); glVertex3f(1, 1, 0);
   glEnd;
 
-  SwapBuffers(DC);
 end;
 
 procedure TObjectHandler.UpdateAll(DT: Double);
@@ -200,8 +229,28 @@ var
   i: Integer;
 begin
   for i := 0 to Length(FObjs) - 1 do begin
-    FObjs[i].Update(0.69);
+    FObjs[i].Update(DT);
   end;
+end;
+
+{ TBackgroundRenderer }
+
+constructor TBackgroundRenderer.Create;
+var
+  i: Integer;
+begin
+  SetLength(FStars, GAME_BACKGROUND_STARCOUNT);
+
+  for i := 0 to GAME_BACKGROUND_STARCOUNT - 1 do begin
+    FStars[i].X := Random;
+    FStars[i].Y := Random;
+    FStars[i].Z := -Random;
+  end;
+end;
+
+procedure TBackgroundRenderer.RenderBackground;
+begin
+
 end;
 
 end.
