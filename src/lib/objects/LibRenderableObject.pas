@@ -3,7 +3,7 @@ unit LibRenderableObject;
 interface
 
 uses
-  DGLOpenGL;
+  LibShared;
 
 type
   TRenderableObject = class abstract
@@ -12,17 +12,19 @@ type
     procedure Render; virtual; abstract;
   end;
 
+  TRenderableArray = array of TRenderableObject;
+
   TWorldObject = class abstract (TRenderableObject)
   protected
     FX,  FY,  FZ,  FR: Single;
     FVX, FVY, FVZ, FVR: Single;
+
+    FColor: TColor;
   public
     property X: Single read FX write FX;
     property Y: Single read FY write FY;
     property Z: Single read FZ write FZ;
     property R: Single read FR write FR;
-
-    function test: Double;
 
     procedure Reset;
 
@@ -30,9 +32,10 @@ type
     procedure Render; override;
   end;
 
-  TRenderableArray = array of TRenderableObject;
-
 implementation
+
+uses
+  DGLOpenGL;
 
 { TWorldObject }
 
@@ -52,11 +55,6 @@ begin
   FVY := 0;
   FVZ := 0;
   FVR := 0;
-end;
-
-function TWorldObject.test: Double;
-begin
-  Result := Sqrt(FVX * FVX + FVY * FVY);
 end;
 
 procedure TWorldObject.Update(DT: Double);

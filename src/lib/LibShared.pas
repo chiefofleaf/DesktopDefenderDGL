@@ -17,13 +17,30 @@ const
   GAME_SHOT_SPEED = 65;
   GAME_SHOT_INACCURACY = 3.5; //5°: Shots will be shot randomly between +2.5° and -2.5° of player angle
 
+  GAME_ASTEROID_SPIN = 5;
+
   GAME_PLAYER_THRUST = 50;
   GAME_PLAYER_THRUST_ROT = -400;
   GAME_PLAYER_COOLDOWN = 0.1; //Weapon cooldown time in seconds
 
+type
+  TColor = record
+    R, G, B, A: Byte;
+  end;
+
+function IntToCol(Color: Integer): TColor;
+
 function DegToRad(Deg: Single): Single;
 
 implementation
+
+function IntToCol(Color: Integer): TColor;
+begin
+  Result.R := Color AND $000000ff;
+  Result.G := Color AND $0000ff00 shr 8;
+  Result.B := Color AND $00ff0000 shr 16;
+  Result.A := COlor And $ff000000 shr 24;
+end;
 
 function DegToRad(Deg: Single): Single;
 begin

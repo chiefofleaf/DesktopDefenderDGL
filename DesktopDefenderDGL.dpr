@@ -10,7 +10,10 @@ uses
   LibRenderableObject in 'src\lib\objects\LibRenderableObject.pas',
   LibPlayer in 'src\lib\objects\LibPlayer.pas',
   LibObjectHandler in 'src\lib\objects\LibObjectHandler.pas',
-  LibShot in 'src\lib\objects\LibShot.pas';
+  LibShot in 'src\lib\objects\LibShot.pas',
+  LibAsteroid in 'src\lib\objects\LibAsteroid.pas',
+  LibElement in 'src\lib\objects\LibElement.pas',
+  LibDestroyableObject in 'src\lib\objects\LibDestroyableObject.pas';
 
 {$R *.res}
 

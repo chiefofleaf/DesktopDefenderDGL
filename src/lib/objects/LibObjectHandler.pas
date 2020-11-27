@@ -5,7 +5,7 @@ interface
 uses
   Generics.Collections,
 
-  LibPlayer, LibRenderableObject, LibShot;
+  LibPlayer, LibRenderableObject, LibShot, LibAsteroid;
 
 type
   TObjectHandler = class
@@ -13,6 +13,7 @@ type
     FPlayer: TPlayer;
     FPlayers: TObjectList<TPlayer>;
     FShots: TObjectList<TShot>;
+    FAsteroids: TObjectList<TAsteroid>;
   private
     function GetObjectList: TRenderableArray;
   public
@@ -33,40 +34,51 @@ uses
 { TObjectHandler }
 
 constructor TObjectHandler.Create;
+var
+  a: TAsteroid;
 begin
-  FPlayer := TPlayer.Create;
   FPlayers := TObjectList<TPlayer>.Create(True);
   FShots := TObjectList<TShot>.Create(True);
+  FAsteroids := TObjectList<TAsteroid>.Create(True);
+
+  FPlayer := TPlayer.Create;
   FPlayers.Add(FPlayer);
+
+  a := TAsteroid.Create(100, 10);
+  a.X := 20;
+  a.Y := 20;
+
+  FAsteroids.Add(a);
 end;
 
 destructor TObjectHandler.Destroy;
 begin
   FPlayers.Free;
   FShots.Free;
+  FAsteroids.Free;
 end;
 
 function TObjectHandler.GetObjectList: TRenderableArray;
 var
   i: Integer;
-  players, shots{, asteroids, coins, guicoins}: Integer;
+  players, shots, asteroids{, coins, guicoins}: Integer;
 begin
   players := FPlayers.Count;
   shots := FShots.Count;
-  //asteroids := FAsteroids.Count;
+  asteroids := FAsteroids.Count;
   //coins := FCoins.List.Count;
   //guicoins := Length(FCoins.GUICoins);
 
-  Setlength(Result, players + shots{ + asteroids + coins + guicoins});
+  Setlength(Result, players + shots + asteroids{ + coins + guicoins});
 
   for i := 0 to players - 1 do
     Result[i] := FPlayers[i];
   for i := 0 to shots - 1 do
     Result[players + i] := FShots[i];
-
-  {
   for i := 0 to asteroids - 1 do
     Result[players + shots + i] := FAsteroids[i];
+
+  {
   for i := 0 to coins - 1 do
     Result[players + shots + asteroids + i] := FCoins.List[i];
   for i := 0 to guicoins - 1 do
