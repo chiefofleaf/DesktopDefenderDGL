@@ -22,6 +22,8 @@ type
     property Z: Single read FZ write FZ;
     property R: Single read FR write FR;
 
+    function test: Double;
+
     procedure Reset;
 
     procedure Update(DT: Double); override;
@@ -52,12 +54,17 @@ begin
   FVR := 0;
 end;
 
+function TWorldObject.test: Double;
+begin
+  Result := Sqrt(FVX * FVX + FVY * FVY);
+end;
+
 procedure TWorldObject.Update(DT: Double);
 begin
-  FX := FX + FVX;
-  FY := FY + FVY;
-  FZ := FZ + FVZ;
-  FR := FR + FVR;
+  FX := FX + FVX * DT;
+  FY := FY + FVY * DT;
+  FZ := FZ + FVZ * DT;
+  FR := FR + FVR * DT;
 end;
 
 end.

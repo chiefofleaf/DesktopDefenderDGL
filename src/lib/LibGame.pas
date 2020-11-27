@@ -39,7 +39,7 @@ type
     procedure SetupGL;
 
     procedure Update(DT: Double);
-    procedure Render;
+    procedure Render(DT: Double);
     procedure HandleError;
   public
     property FPS: Integer read FLastFPS;
@@ -134,7 +134,7 @@ begin
     diff := (thisTime - FLastTime) / fr;
 
     Update(diff);
-    Render;
+    Render(diff);
     HandleError;
 
     FFrames := FFrames + 1;
@@ -149,7 +149,7 @@ begin
 
   end;
 
-  sleep(10);
+  //sleep(10);
   Done := False;
 end;
 
@@ -170,14 +170,14 @@ begin
   FObjectHandler.UpdateAll(DT);
 end;
 
-procedure TGame.Render;
+procedure TGame.Render(DT: Double);
 begin
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity;
 
-  FCam.SetCamera(FObjectHandler.Player.X, FObjectHandler.Player.Y);
+  FCam.SetCamera(FObjectHandler.Player.X, FObjectHandler.Player.Y, DT);
 
   glPushMatrix;
     FBackgroundRenderer.RenderBackground;

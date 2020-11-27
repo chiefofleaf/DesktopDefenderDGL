@@ -9,12 +9,17 @@ const
   DISPLAY_TRANSPARENT = FALSE;
   DISPLAY_TRANSPARENT_COLOR = $00010101;
 
-  CAMERA_MOVE_SPEED = 0.1;//0: no move; 0<x<1: limited camera speed; 1: instant camera positioning
+  CAMERA_MOVE_SPEED = 5;//0: no move; 0<x<1: limited camera speed; 1: instant camera positioning
 
-  GAME_BACKGROUND_STARCOUNT = 500;
+  GAME_BACKGROUND_STARCOUNT = 1000;
 
-  GAME_PLAYER_THRUST = 1;
-  GAME_PLAYER_THRUST_ROT = -10;
+  GAME_SHOT_LIFESPAN = 1.5; //After this many seconds, a shot shot will be destroyed
+  GAME_SHOT_SPEED = 65;
+  GAME_SHOT_INACCURACY = 3.5; //5°: Shots will be shot randomly between +2.5° and -2.5° of player angle
+
+  GAME_PLAYER_THRUST = 50;
+  GAME_PLAYER_THRUST_ROT = -400;
+  GAME_PLAYER_COOLDOWN = 0.1; //Weapon cooldown time in seconds
 
 function DegToRad(Deg: Single): Single;
 

@@ -8,7 +8,7 @@ type
     CurX, CurY: Single;
   public
     constructor Create;
-    procedure SetCamera(X, Y: Single);
+    procedure SetCamera(X, Y: Single; DT: Double);
   end;
 
 implementation
@@ -26,10 +26,10 @@ begin
   CurY := 0;
 end;
 
-procedure TCamera2D.SetCamera(X, Y: Single);
+procedure TCamera2D.SetCamera(X, Y: Single; DT: Double);
 begin
-  CurX := CurX + CAMERA_MOVE_SPEED * (X - CurX);
-  CurY := CurY + CAMERA_MOVE_SPEED * (Y - CurY);
+  CurX := CurX + CAMERA_MOVE_SPEED * (X - CurX) * DT;
+  CurY := CurY + CAMERA_MOVE_SPEED * (Y - CurY) * DT;
 
   glTranslatef(-CurX, -CurY, -150);
 end;

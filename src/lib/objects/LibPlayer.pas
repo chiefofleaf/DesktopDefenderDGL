@@ -3,16 +3,20 @@ unit LibPlayer;
 interface
 
 uses
-  LibRenderableObject;
+  LibRenderableObject, LibShot;
 
 type
   TThrusterType = (ttMain, ttSpinL, ttSpinR);
 
   TPlayer = class(TWorldObject)
+  private
+    FCooldown: Single;
   public
     procedure Thrust(ThrusterType: TThrusterType; DT: Single);
+    function Shoot: TShot;
 
     procedure Render; override;
+    procedure Update(DT: Double); override;
 
   end;
 
@@ -25,6 +29,23 @@ uses
 
 { TPlayer }
 
+function TPlayer.Shoot: TShot;
+var
+  shotAngle: Single;
+begin
+  Result := nil;
+  if FCooldown <= 0 then begin
+    shotAngle := FR + Random * GAME_SHOT_INACCURACY - GAME_SHOT_INACCURACY / 2;
+    Result := TShot.Create(FX, FY,
+                           shotAngle,
+                           FVX + GAME_SHOT_SPEED * Cos(DegTorad(shotAngle)),
+                           FVY + GAME_SHOT_SPEED * Sin(DegTorad(shotAngle)),
+                           10);
+
+    FCooldown := GAME_PLAYER_COOLDOWN;
+  end;
+end;
+
 procedure TPlayer.Thrust(ThrusterType: TThrusterType; DT: Single);
 begin
   case ThrusterType of
@@ -35,6 +56,13 @@ begin
     ttSpinL: FVR := FVR + GAME_PLAYER_THRUST_ROT * DT;
     ttSpinR: FVR := FVR - GAME_PLAYER_THRUST_ROT * DT;
   end;
+end;
+
+procedure TPlayer.Update(DT: Double);
+begin
+  inherited;
+
+  FCooldown := FCooldown - DT;
 end;
 
 procedure TPlayer.Render;
