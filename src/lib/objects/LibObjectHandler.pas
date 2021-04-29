@@ -29,7 +29,8 @@ type
 implementation
 
 uses
-  DGLOpenGL, Winapi.Windows;
+  Winapi.Windows, DGLOpenGL,
+  LibShared;
 
 { TObjectHandler }
 
@@ -117,21 +118,31 @@ var
   var
     s: TShot;
   begin
-    if (GetKeyState(VK_DOWN) AND $80) <> 0 then
+    if KeyIsPressed(VK_DOWN) then
       FPlayer.Thrust(ttMain, DT);
 
-    if (GetKeyState(VK_LEFT) AND $80) <> 0 then
-      FPlayer.Thrust(ttSpinL, DT);
-    if (GetKeyState(VK_RIGHT) AND $80) <> 0 then
-      FPlayer.Thrust(ttSpinR, DT);
+    if not KeyIsPressed(VK_CONTROL) then begin
+      if KeyIsPressed(VK_LEFT) then
+        FPlayer.Thrust(ttSpinL, DT);
+      if KeyIsPressed(VK_RIGHT) then
+        FPlayer.Thrust(ttSpinR, DT);
+    end else begin
+      if KeyIsPressed(VK_DOWN) then
+        FPlayer.Thrust(tt0, DT);
 
-    if (GetKeyState(VK_UP) AND $80) <> 0 then begin
+      if KeyIsPressed(VK_LEFT) then
+        FPlayer.Thrust(ttYSpinL, DT);
+      if KeyIsPressed(VK_RIGHT) then
+        FPlayer.Thrust(ttYSpinR, DT);
+    end;
+
+    if KeyIsPressed(VK_UP) then begin
       s := FPlayer.Shoot;
       if s <> nil then
         FShots.Add(s);
     end;
 
-    if (GetKeyState(VK_SPACE) AND $80) <> 0 then begin
+    if KeyIsPressed(VK_SPACE) then begin
       FPlayer.Reset;
     end;
   end;

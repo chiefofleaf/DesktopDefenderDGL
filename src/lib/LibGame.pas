@@ -22,35 +22,50 @@ type
 
   TGame = class
   private
+    //OpenGL uses these to know on which window, panel to draw
     FHandle: Cardinal;
     RC: HGLRC;
     DC: HDC;
 
+    //whether game is paused or not
     FStarted: Boolean;
-    FCam: TCamera2D;
+
+    //the important stuff
+    FCam: TCamera2D;  aY, aX:Single; FZoom: Single;
     FBackgroundRenderer: TBackgroundRenderer;
     FObjectHandler: TObjectHandler;
 
+    //used for FPS calculation
     FLastTime: Int64;
     FTimeCounter: Double;
     FFrames: Integer;
     FLastFPS: Integer;
 
+    //set up some OpenGL stuff
     procedure SetupGL;
 
+    //the main Update and Render procedures that get called directly by the main game loop
+    //the actual updating and rendering is done by the procedures called by these main two procs
     procedure Update(DT: Double);
     procedure Render(DT: Double);
+
+    //important for when I use OpenGL incorrectly :)
     procedure HandleError;
   public
+    //public access to get the last calculated FPS value
     property FPS: Integer read FLastFPS;
 
-
+    //constructor, destructor. you know what's up.
     constructor Create(WindowHandle: Cardinal);
     destructor Destroy; override;
 
+    //called, when window gets resized
     procedure Resize(NewWidth, NewHeight: Integer);
 
+    //main game loop. called by the delphi Application.IdleHandler
     procedure GameLoop(Sender: TObject; var Done: Boolean);
+
+    //set FStarted
     procedure Start;
     procedure Stop;
   end;
@@ -86,6 +101,8 @@ begin
   FTimeCounter := 0;
   FFrames := 0;
   FLastFPS := 0;
+  aY := 0;aX := 0;
+  FZoom := 1;
 end;
 
 destructor TGame.Destroy;
@@ -106,6 +123,8 @@ begin
   glClearColor(1/255, 1/255, 1/255, 0); //
   glEnable(GL_DEPTH_TEST);          //Tiefentest aktivieren
   glEnable(GL_CULL_FACE);           //Backface Culling aktivieren
+  glEnable(GL_POINT_SMOOTH);
+  glDisable(GL_LINE_SMOOTH);
 end;
 
 procedure TGame.Resize(NewWidth, NewHeight: Integer);
@@ -149,7 +168,7 @@ begin
 
   end;
 
-  //sleep(10);
+  sleep(10);
   Done := False;
 end;
 
@@ -177,7 +196,29 @@ begin
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity;
 
-  FCam.SetCamera(FObjectHandler.Player.X, FObjectHandler.Player.Y, DT);
+  if KeyIsPressed(Ord('D')) then
+    aY := aY + DT * 100;
+  if KeyIsPressed(Ord('A')) then
+    aY := aY - DT * 100;
+
+  if KeyIsPressed(Ord('W')) then
+    aX := aX + DT * 100;
+  if KeyIsPressed(Ord('S')) then
+    aX := aX - DT * 100;
+
+  if KeyIsPressed(VK_ADD) then
+    FZoom := FZoom * (1 - CAMERA_ZOOM_SPEED * DT);
+  if KeyIsPressed(VK_SUBTRACT) then
+    FZoom := FZoom * (1 + CAMERA_ZOOM_SPEED * DT);
+
+
+  glTranslatef(0, 0, -CAMERA_DISTANCE * FZoom);
+
+  glRotatef(aX, 1, 0, 0);
+  glRotatef(aY, 0, 1, 0);
+
+  FCam.SetCamera(FObjectHandler.Player.X, FObjectHandler.Player.Y, FObjectHandler.Player.Z, DT);
+
 
   glPushMatrix;
     FBackgroundRenderer.RenderBackground;
@@ -186,6 +227,8 @@ begin
   glPushMatrix;
     FObjectHandler.RenderAll;
   glPopMatrix;
+
+  glLoadIdentity;
 
   SwapBuffers(DC);
 end;
@@ -221,7 +264,7 @@ var
 begin
   glPointSize(2);
 
-  glScalef(5000, 5000, 5000);
+  glScalef(10000, 10000, 5000);
   glTranslatef(-0.5, -0.5, -0.1);
   glBegin(GL_POINTS);
     glColor3f(1, 1, 1);

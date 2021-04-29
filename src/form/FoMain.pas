@@ -50,6 +50,15 @@ procedure TfmMain.FormKeyDown(Sender: TObject; var Key: Word;
 begin
   case Key of
     VK_ESCAPE: Application.Terminate;
+    VK_F11: begin
+      if WindowState <> wsMaximized then begin
+        BorderStyle := bsNone;
+        WindowState := wsMaximized;
+      end else begin
+        WindowState := wsNormal;
+        BorderStyle := bsSizeable;
+      end;
+    end;
   end;
 end;
 

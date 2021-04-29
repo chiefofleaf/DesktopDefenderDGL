@@ -1,9 +1,9 @@
 object fmMain: TfmMain
-  Left = 0
-  Top = 0
+  Left = 1400
+  Top = 700
   Caption = 'asdf'
-  ClientHeight = 752
-  ClientWidth = 1209
+  ClientHeight = 611
+  ClientWidth = 988
   Color = clBtnFace
   TransparentColor = True
   TransparentColorValue = 65793
@@ -13,6 +13,7 @@ object fmMain: TfmMain
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poDesigned
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
