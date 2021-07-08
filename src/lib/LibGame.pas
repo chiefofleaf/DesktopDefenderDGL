@@ -254,7 +254,7 @@ begin
   for i := 0 to GAME_BACKGROUND_STARCOUNT - 1 do begin
     FStars[i].X := Random;
     FStars[i].Y := Random;
-    FStars[i].Z := -Random;
+    FStars[i].Z :=-Random;
   end;
 end;
 
@@ -267,8 +267,9 @@ begin
   glScalef(10000, 10000, 5000);
   glTranslatef(-0.5, -0.5, -0.1);
   glBegin(GL_POINTS);
-    glColor3f(1, 1, 1);
     for i := 0 to GAME_BACKGROUND_STARCOUNT - 1 do begin
+      glColor3f(1 + FStars[i].Z, 1 + FStars[i].Z, 1 + FStars[i].Z);
+
       glVertex3f(FStars[i].X, FStars[i].Y, FStars[i].Z);
     end;
   glEnd;
