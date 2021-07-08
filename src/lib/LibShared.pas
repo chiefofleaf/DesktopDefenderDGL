@@ -15,6 +15,9 @@ const
 
   GAME_BACKGROUND_STARCOUNT = 12000;
 
+  GAME_GENERATION_CHUNK = 20;
+  GAME_GENERATION_BUFFER = 3;
+
   GAME_SHOT_LIFESPAN = 1.5; //After this many seconds, a shot shot will be destroyed
   GAME_SHOT_SPEED = 65;
   GAME_SHOT_INACCURACY = 3.5; //5°: Shots will be shot randomly between +2.5° and -2.5° of player angle
@@ -33,6 +36,7 @@ type
 
   TFloatPoint = record
     X, Y: Single;
+    constructor Create(AX, AY: Single);
   end;
 
 function KeyIsPressed(VKCode: Cardinal): Boolean;
@@ -62,6 +66,14 @@ end;
 function DegToRad(Deg: Single): Single;
 begin
   Result := Deg / 180 * Pi;
+end;
+
+{ TFloatPoint }
+
+constructor TFloatPoint.Create(AX, AY: Single);
+begin
+  X := AX;
+  Y := AY;
 end;
 
 end.

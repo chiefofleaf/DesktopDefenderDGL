@@ -5,15 +5,51 @@ interface
 uses
   Generics.Collections,
 
-  LibPlayer, LibRenderableObject, LibShot, LibAsteroid;
+  LibPlayer, LibRenderableObject, LibShot, LibAsteroid, LibShared;
 
 type
+  TBiomeType = (btRocky, btNotAsRocky, btMinerally);
+
+  TBiome = class
+  private
+    FBiomeType: TBiomeType;
+    FSize: Single;
+    FPosition: TFloatPoint;
+
+  public
+    property BiomeType: TBiomeType read FBiomeType;
+    property Size: Single read FSize;
+    property Position: TFloatPoint read FPosition;
+
+    constructor Create(ABiomeType: TBiomeType; ASize: Single; APosition: TFloatPoint);
+  end;
+
+  TWorldGenerator = class
+  private
+    FBiomes: TObjectList<TBiome>;
+
+    //Visited Coordinates
+    FVisitedBottomLeft, FVisitedTopRight: TFloatPoint;
+
+    //Generated up until
+    FGeneratedBottomLeft, FGeneratedTopRight: TFloatPoint;
+  public
+    property Biomes: TObjectList<TBiome> read FBiomes;
+    property BottomLeft: TFloatPoint read FVisitedBottomLeft;
+    property TopRight: TFloatPoint read FVisitedTopRight;
+
+    procedure Visit(APosition: TFloatPoint);
+    procedure GenerateBiomes(FromBottomLeft, ToTopRight: TFloatPoint; IntoList: TObjectList<TWorldObject>);
+  end;
+
   TObjectHandler = class
   private
     FPlayer: TPlayer;
     FPlayers: TObjectList<TPlayer>;
     FShots: TObjectList<TShot>;
     FAsteroids: TObjectList<TAsteroid>;
+
+    FWorldGenerator: TWorldGenerator;
   private
     function GetObjectList: TRenderableArray;
   public
@@ -29,8 +65,7 @@ type
 implementation
 
 uses
-  Winapi.Windows, DGLOpenGL,
-  LibShared;
+  Winapi.Windows, DGLOpenGL;
 
 { TObjectHandler }
 
@@ -45,6 +80,8 @@ begin
   FPlayer := TPlayer.Create;
   FPlayers.Add(FPlayer);
 
+  FWorldGenerator := TWorldGenerator.Create;
+
   a := TAsteroid.Create(100, 10);
   a.X := 20;
   a.Y := 20;
@@ -57,6 +94,7 @@ begin
   FPlayers.Free;
   FShots.Free;
   FAsteroids.Free;
+  FWorldGenerator.Free;
 end;
 
 function TObjectHandler.GetObjectList: TRenderableArray;
@@ -91,6 +129,18 @@ procedure TObjectHandler.RenderAll;
 var
   i: Integer;
   objs: TRenderableArray;
+
+  procedure RenderRect(BL, TR: TFloatPoint; R, G, B: Single);
+  begin
+    glBegin(GL_LINE_LOOP);
+      glColor3f(R, G, B);
+      glVertex2f(BL.X, BL.Y);
+      glVertex2f(BL.X, TR.Y);
+      glVertex2f(TR.X, TR.Y);
+      glVertex2f(TR.X, BL.Y);
+    glEnd;
+  end;
+
 begin
   objs := GetObjectList;
 
@@ -106,6 +156,15 @@ begin
     glColor3f(0, 0, 1); glVertex3f( 5,  5, 0);
   glEnd;
 
+  //Show visited bounds
+  RenderRect(FWorldGenerator.FVisitedBottomLeft,
+             FWorldGenerator.FVisitedTopRight,
+             1, 0, 0);
+
+  //Show generated bounds
+  RenderRect(FWorldGenerator.FGeneratedBottomLeft,
+             FWorldGenerator.FGeneratedTopRight,
+             0, 0, 1);
 end;
 
 procedure TObjectHandler.UpdateAll(DT: Double);
@@ -172,6 +231,52 @@ begin
   for i := 0 to Length(objs) - 1 do begin
     objs[i].Update(DT);
   end;
+
+  FWorldGenerator.Visit(TFloatPoint.Create(FPlayer.X, FPlayer.Y));
+end;
+
+{ TBiome }
+
+constructor TBiome.Create(ABiomeType: TBiomeType; ASize: Single;
+  APosition: TFloatPoint);
+begin
+  FBiomeType := ABiomeType;
+  FSize := ASize;
+  FPosition := APosition;
+end;
+
+{ TWorldGenerator }
+
+procedure TWorldGenerator.GenerateBiomes(FromBottomLeft,
+  ToTopRight: TFloatPoint; IntoList: TObjectList<TWorldObject>);
+begin
+
+end;
+
+procedure TWorldGenerator.Visit(APosition: TFloatPoint);
+const
+  BUFFER = GAME_GENERATION_CHUNK * GAME_GENERATION_BUFFER;
+begin
+  if APosition.X < FVisitedBottomLeft.X then
+    FVisitedBottomLeft.X := APosition.X
+  else if APosition.X > FVisitedTopRight.X then
+    FVisitedTopRight.X := APosition.X;
+
+  if APosition.Y < FVisitedBottomLeft.Y then
+    FVisitedBottomLeft.Y := APosition.Y
+  else if APosition.Y > FVisitedTopRight.Y then
+    FVisitedTopRight.Y := APosition.Y;
+
+
+  if (APosition.X - BUFFER) < FGeneratedBottomLeft.X then
+    FGeneratedBottomLeft.X := (APosition.X - BUFFER - GAME_GENERATION_CHUNK)
+  else if (APosition.X + BUFFER) > FGeneratedTopRight.X then
+    FGeneratedTopRight.X := (APosition.X + BUFFER + GAME_GENERATION_CHUNK);
+
+  if (APosition.Y - BUFFER) < FGeneratedBottomLeft.Y then
+    FGeneratedBottomLeft.Y := (APosition.Y - BUFFER - GAME_GENERATION_CHUNK)
+  else if (APosition.Y + BUFFER) > FGeneratedTopRight.Y then
+    FGeneratedTopRight.Y := (APosition.Y + BUFFER + GAME_GENERATION_CHUNK);
 end;
 
 end.
