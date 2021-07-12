@@ -5,7 +5,7 @@ interface
 uses
   Generics.Collections,
 
-  LibPlayer, LibRenderableObject, LibShot, LibAsteroid, LibShared;
+  LibPlayer, LibRenderableObject, LibShot, LibAsteroid, LibShared, LibMaterial;
 
 type
   TBiomeType = (btRocky, btNotAsRocky, btMinerally);
@@ -48,6 +48,7 @@ type
     FPlayers: TObjectList<TPlayer>;
     FShots: TObjectList<TShot>;
     FAsteroids: TObjectList<TAsteroid>;
+    FMaterials: TObjectList<TMaterial>;
 
     FWorldGenerator: TWorldGenerator;
   private
@@ -57,6 +58,8 @@ type
 
     constructor Create;
     destructor Destroy; override;
+
+    procedure ResetGame;
 
     procedure UpdateAll(DT: Double);
     procedure RenderAll;
@@ -70,23 +73,46 @@ uses
 { TObjectHandler }
 
 constructor TObjectHandler.Create;
-var
-  a: TAsteroid;
 begin
   FPlayers := TObjectList<TPlayer>.Create(True);
   FShots := TObjectList<TShot>.Create(True);
   FAsteroids := TObjectList<TAsteroid>.Create(True);
+  FMaterials := TObjectList<TMaterial>.Create(True);
 
   FPlayer := TPlayer.Create;
   FPlayers.Add(FPlayer);
 
   FWorldGenerator := TWorldGenerator.Create;
 
-  a := TAsteroid.Create(100, 10);
-  a.X := 20;
-  a.Y := 20;
+  ResetGame;
+end;
 
-  FAsteroids.Add(a);
+procedure TObjectHandler.ResetGame;
+var
+  i: Integer;
+  a: TAsteroid;
+  mt: TMaterialType;
+  m: TMaterial;
+begin
+  FPlayer.Reset;
+  FShots.Clear;
+  FAsteroids.Clear;
+  FMaterials.Clear;
+
+  for i := 0 to 200 - 1 do begin
+    a := TAsteroid.Create(50, Random * 10 + 5);
+    a.X := Random * 2000 - 1000;
+    a.Y := Random * 2000 - 1000;
+
+    FAsteroids.Add(a);
+  end;
+
+  for mt := Low(TMaterialType) to High(TMaterialType) do begin
+    m := TMaterial.Create(mt);
+    m.X := 10;
+    m.Y := Integer(mt) * 5;
+    FMaterials.Add(m);
+  end;
 end;
 
 destructor TObjectHandler.Destroy;
@@ -94,21 +120,21 @@ begin
   FPlayers.Free;
   FShots.Free;
   FAsteroids.Free;
+  FMaterials.Free;
   FWorldGenerator.Free;
 end;
 
 function TObjectHandler.GetObjectList: TRenderableArray;
 var
   i: Integer;
-  players, shots, asteroids{, coins, guicoins}: Integer;
+  players, shots, asteroids, materials: Integer;
 begin
   players := FPlayers.Count;
   shots := FShots.Count;
   asteroids := FAsteroids.Count;
-  //coins := FCoins.List.Count;
-  //guicoins := Length(FCoins.GUICoins);
+  materials := FMaterials.Count;
 
-  Setlength(Result, players + shots + asteroids{ + coins + guicoins});
+  Setlength(Result, players + shots + asteroids + materials);
 
   for i := 0 to players - 1 do
     Result[i] := FPlayers[i];
@@ -116,13 +142,8 @@ begin
     Result[players + i] := FShots[i];
   for i := 0 to asteroids - 1 do
     Result[players + shots + i] := FAsteroids[i];
-
-  {
-  for i := 0 to coins - 1 do
-    Result[players + shots + asteroids + i] := FCoins.List[i];
-  for i := 0 to guicoins - 1 do
-    Result[players + shots + asteroids + coins + i] := FCoins.GUICoins[i];
-  }
+  for i := 0 to materials - 1 do
+    result[players + shots + asteroids + i] := FMaterials[i];
 end;
 
 procedure TObjectHandler.RenderAll;
@@ -223,6 +244,62 @@ var
     end;
   end;
 
+  function DidCollide(X1, Y1, X2, Y2, ColRad: Double): Boolean;
+  var
+    xDiff, yDiff: Double;
+  begin
+    Result := False;
+
+    xDiff := Abs(X1 - X2);
+    yDiff := Abs(Y1 - Y2);
+
+    //rough collision
+    if (xDiff < ColRad)
+    or (yDiff < ColRad) then begin
+
+      //exact collision
+      if (xDiff * xDiff + yDiff * yDiff) <= (ColRad * ColRad) then
+        Result := True;
+    end;
+  end;
+
+  procedure CheckCollisions;
+  var
+    i, j: Integer;
+    p: TPlayer;
+    a: TAsteroid;
+    s: TShot;
+  begin
+    //check if players were hit
+    for i := FPlayers.Count - 1 downto 0 do begin
+      for j := FAsteroids.Count - 1 downto 0 do begin
+        p := FPlayers[i];
+        a := FAsteroids[j];
+
+        if DidCollide(p.X, p.Y, a.X, a.Y, a.CollisionRadius) then begin
+          ResetGame;
+          Exit;
+        end;
+      end;
+    end;
+
+    //check if any shots hit any targets
+    for i := FShots.Count - 1 downto 0 do begin
+      for j := FAsteroids.Count - 1 downto 0 do begin
+        s := FShots[i];
+        a := FAsteroids[j];
+
+        if DidCollide(s.X, s.Y, a.X, a.Y, a.CollisionRadius) then begin
+          if a.Damage(s.Dmg) then
+            FAsteroids.Delete(j);
+
+          FShots.Delete(i);
+          Break;
+        end;
+      end;
+    end;
+  end;
+
 begin
   PlayerInput;
   DeleteOldShots;
@@ -231,6 +308,8 @@ begin
   for i := 0 to Length(objs) - 1 do begin
     objs[i].Update(DT);
   end;
+
+  CheckCollisions;
 
   FWorldGenerator.Visit(TFloatPoint.Create(FPlayer.X, FPlayer.Y));
 end;

@@ -12,7 +12,7 @@ uses
   LibObjectHandler in 'src\lib\objects\LibObjectHandler.pas',
   LibShot in 'src\lib\objects\LibShot.pas',
   LibAsteroid in 'src\lib\objects\LibAsteroid.pas',
-  LibElement in 'src\lib\objects\LibElement.pas',
+  LibMaterial in 'src\lib\objects\LibMaterial.pas',
   LibDestroyableObject in 'src\lib\objects\LibDestroyableObject.pas';
 
 {$R *.res}

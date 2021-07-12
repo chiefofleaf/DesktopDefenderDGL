@@ -11,6 +11,8 @@ type
     FDmg: Single;
     FLifespan: Single;
   public
+    property Dmg: Single read FDmg;
+
     constructor Create(X, Y, R, VX, VY, Dmg: Single);
 
     function LifespanOver: Boolean;

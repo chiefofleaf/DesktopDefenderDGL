@@ -103,7 +103,7 @@
         <DCCReference Include="src\lib\objects\LibObjectHandler.pas"/>
         <DCCReference Include="src\lib\objects\LibShot.pas"/>
         <DCCReference Include="src\lib\objects\LibAsteroid.pas"/>
-        <DCCReference Include="src\lib\objects\LibElement.pas"/>
+        <DCCReference Include="src\lib\objects\LibMaterial.pas"/>
         <DCCReference Include="src\lib\objects\LibDestroyableObject.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

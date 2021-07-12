@@ -5,7 +5,7 @@ interface
 uses
   System.Types,
 
-  LibDestroyableObject, LibElement, LibShared;
+  LibDestroyableObject, LibMaterial, LibShared;
 
 type
   TAsteroid = class (TDestroyableObject)
@@ -14,7 +14,7 @@ type
   public
     constructor Create(HPMax: Single; CollisionRadius: Single); override;
 
-    function GenerateLoot: TElementArray; override;
+    function GenerateLoot: TMaterialArray; override;
     procedure Render; override;
   end;
 
@@ -43,7 +43,7 @@ begin
   end;
 end;
 
-function TAsteroid.GenerateLoot: TElementArray;
+function TAsteroid.GenerateLoot: TMaterialArray;
 begin
   //NYI
 end;

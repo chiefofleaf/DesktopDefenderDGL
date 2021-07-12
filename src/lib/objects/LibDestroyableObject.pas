@@ -3,7 +3,7 @@ unit LibDestroyableObject;
 interface
 
 uses
-  LibRenderableObject, LibElement;
+  LibRenderableObject, LibMaterial;
 
 type
   TDestroyableObject = class abstract (TWorldObject)
@@ -19,7 +19,7 @@ type
     //Decreases FHP by Dmg and returns whether object has <= 0 HP
     function Damage(Dmg: Single): Boolean; virtual;
     //Returns array of Elements the object dropped
-    function GenerateLoot: TElementArray; virtual; abstract;
+    function GenerateLoot: TMaterialArray; virtual; abstract;
 
     constructor Create(HPMax: Single; CollisionRadius: Single); virtual;
   end;
