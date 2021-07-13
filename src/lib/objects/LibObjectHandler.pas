@@ -177,15 +177,17 @@ begin
     glColor3f(0, 0, 1); glVertex3f( 5,  5, 0);
   glEnd;
 
-  //Show visited bounds
-  RenderRect(FWorldGenerator.FVisitedBottomLeft,
-             FWorldGenerator.FVisitedTopRight,
-             1, 0, 0);
+  if DebugMode then begin
+    //Show visited bounds
+    RenderRect(FWorldGenerator.FVisitedBottomLeft,
+               FWorldGenerator.FVisitedTopRight,
+               1, 0, 0);
 
-  //Show generated bounds
-  RenderRect(FWorldGenerator.FGeneratedBottomLeft,
-             FWorldGenerator.FGeneratedTopRight,
-             0, 0, 1);
+    //Show generated bounds
+    RenderRect(FWorldGenerator.FGeneratedBottomLeft,
+               FWorldGenerator.FGeneratedTopRight,
+               0, 0, 1);
+  end;
 end;
 
 procedure TObjectHandler.UpdateAll(DT: Double);

@@ -13,7 +13,9 @@ uses
   LibShot in 'src\lib\objects\LibShot.pas',
   LibAsteroid in 'src\lib\objects\LibAsteroid.pas',
   LibMaterial in 'src\lib\objects\LibMaterial.pas',
-  LibDestroyableObject in 'src\lib\objects\LibDestroyableObject.pas';
+  LibDestroyableObject in 'src\lib\objects\LibDestroyableObject.pas',
+  Vcl.Themes,
+  Vcl.Styles;
 
 {$R *.res}
 
@@ -22,6 +24,7 @@ begin
 
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
+  TStyleManager.TrySetStyle('TabletDark');
   Application.CreateForm(TfmMain, fmMain);
   Application.Run;
 end.

@@ -45,6 +45,8 @@ function IntToCol(Color: Integer): TColor;
 
 function DegToRad(Deg: Single): Single;
 
+function DebugMode: Boolean;
+
 implementation
 
 uses
@@ -66,6 +68,11 @@ end;
 function DegToRad(Deg: Single): Single;
 begin
   Result := Deg / 180 * Pi;
+end;
+
+function DebugMode: Boolean;
+begin
+  Result := ParamStr(1) = 'debug';
 end;
 
 { TFloatPoint }
