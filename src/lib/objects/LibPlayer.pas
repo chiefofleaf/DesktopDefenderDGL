@@ -182,8 +182,6 @@ begin
 end;
 
 procedure TPlayer.Reset;
-var
-  mt: TMaterialType;
 begin
   inherited;
 

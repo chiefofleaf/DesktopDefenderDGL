@@ -25,9 +25,14 @@ type
                            PickUpableObjects: TObjectList<TMaterial>); virtual; abstract;
 
     constructor Create(HPMax: Single; CollisionRadius: Single); virtual;
+
+    procedure Render; override;
   end;
 
 implementation
+
+uses
+  LibShared, DGLOpenGL;
 
 { TDestroyableObject }
 
@@ -42,6 +47,27 @@ function TDestroyableObject.Damage(Dmg: Single): Boolean;
 begin
   FHP := FHP - Dmg;
   Result := FHP <= 0;
+end;
+
+procedure TDestroyableObject.Render;
+var
+  i: Integer;
+  a: Single;
+const
+  CIRCLE_POINTS = 10;
+begin
+  inherited;
+
+  if DebugMode then begin
+
+    glBegin(GL_LINE_LOOP);
+    glColor3f(0, 1, 0);
+    for i := 0 to CIRCLE_POINTS - 1 do begin
+      a := i / CIRCLE_POINTS * 2*Pi;
+      glVertex2f(FCollisionRadius * Cos(a), FCollisionRadius * Sin(a));
+    end;
+    glEnd;
+  end;
 end;
 
 end.

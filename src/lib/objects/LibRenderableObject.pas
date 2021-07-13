@@ -46,6 +46,13 @@ procedure TWorldObject.Render;
 begin
   glTranslatef(FX, FY, FZ);
   glRotatef(FR, 0, 0, 1);
+
+  if DebugMode then begin
+    glBegin(GL_POINTS);
+    glColor3f(1, 1, 1);
+    glVertex3f(0, 0, 1);
+    glEnd;
+  end;
 end;
 
 procedure TWorldObject.Reset;

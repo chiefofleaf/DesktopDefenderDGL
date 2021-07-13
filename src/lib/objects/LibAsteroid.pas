@@ -50,12 +50,17 @@ procedure TAsteroid.GenerateLoot(
   PickUpableObjects: TObjectList<TMaterial>);
 var
   i: Integer;
+  babyAstCount: Integer;
+  a: TAsteroid;
   m: TMaterial;
   mt: TMaterialType;
 begin
   inherited;
 
   if FHP > 0 then begin
+
+
+          {
     for i := 0 to Round(Random * 2) do begin
 
       mt := TMaterialType(Round(Random * Integer(High(TMaterialType))));
@@ -68,8 +73,45 @@ begin
 
       m.R := Random * 360;
       PickUpableObjects.Add(m)
+    end;   }
+
+  end else begin
+    //HP < 0
+
+    while Random < 0.1 do begin
+      mt := TMaterialType(Round(Random * Integer(High(TMaterialType))));
+      m := TMaterial.Create(mt);
+      m.X := FX + Random * 10 - 5;
+      m.Y := FY + Random * 10 - 5;
+
+      m.VX := FVX + Random * 2 - 1;
+      m.VY := FVY + Random * 2 - 1;
+
+      m.R := Random * 360;
+      PickUpableObjects.Add(m)
     end;
 
+    babyAstCount := 1;
+    //chance to split into smaller asteroids
+    while random < GAME_ASTEROID_SPLIT_CHANCE do begin
+      babyAstCount := babyAstCount + 1;
+    end;
+
+    if  (babyAstCount >= 1)
+    //and ((CollisionRadius / babyAstCount) >= GAME_ASTEROID_MINSIZE)
+    then begin
+      for i := 0 to babyAstCount - 1 do begin
+        a := TAsteroid.Create(FHPMax / babyAstCount, FCollisionRadius / babyAstCount);
+        a.X := FX + Random * 10 - 5;
+        a.Y := FY + Random * 10 - 5;
+
+        a.VX := FVX + Random * 4 - 2;
+        a.VY := FVY + Random * 4 - 2;
+
+        a.R := Random * 360;
+        DestroyableObjects.Add(a);
+      end;
+    end;
   end;
 end;
 

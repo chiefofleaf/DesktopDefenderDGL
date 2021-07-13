@@ -15,12 +15,15 @@ uses
   LibMaterial in 'src\lib\objects\LibMaterial.pas',
   LibDestroyableObject in 'src\lib\objects\LibDestroyableObject.pas',
   Vcl.Themes,
-  Vcl.Styles;
+  Vcl.Styles,
+  LibRandom in 'src\lib\LibRandom.pas',
+  LibRandomTest in 'LibRandomTest.pas';
 
 {$R *.res}
-
 begin
   ReportMemoryLeaksOnShutdown := True;
+
+  //PerformLootTableTest;
 
   Application.Initialize;
   Application.MainFormOnTaskbar := True;

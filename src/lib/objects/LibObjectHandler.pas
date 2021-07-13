@@ -296,8 +296,11 @@ var
         if DidCollide(s.X, s.Y, a.X, a.Y, a.CollisionRadius) then begin
           a.GenerateLoot(FAsteroids, FMaterials);
 
-          if a.Damage(s.Dmg) then
+          //Is object destroyed?
+          if a.Damage(s.Dmg) then begin
+            a.GenerateLoot(FAsteroids, FMaterials);
             FAsteroids.Delete(j);
+          end;
 
           FShots.Delete(i);
           Break;
