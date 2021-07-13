@@ -3,7 +3,7 @@ unit LibAsteroid;
 interface
 
 uses
-  System.Types,
+  System.Types, Generics.Collections,
 
   LibDestroyableObject, LibMaterial, LibShared;
 
@@ -14,7 +14,9 @@ type
   public
     constructor Create(HPMax: Single; CollisionRadius: Single); override;
 
-    function GenerateLoot: TMaterialArray; override;
+
+    procedure GenerateLoot(DestroyableObjects: TObjectList<TDestroyableObject>;
+                           PickUpableObjects: TObjectList<TMaterial>); override;
     procedure Render; override;
   end;
 
@@ -43,9 +45,32 @@ begin
   end;
 end;
 
-function TAsteroid.GenerateLoot: TMaterialArray;
+procedure TAsteroid.GenerateLoot(
+  DestroyableObjects: TObjectList<TDestroyableObject>;
+  PickUpableObjects: TObjectList<TMaterial>);
+var
+  i: Integer;
+  m: TMaterial;
+  mt: TMaterialType;
 begin
-  //NYI
+  inherited;
+
+  if FHP > 0 then begin
+    for i := 0 to Round(Random * 2) do begin
+
+      mt := TMaterialType(Round(Random * Integer(High(TMaterialType))));
+      m := TMaterial.Create(mt);
+      m.X := FX + Random * 10 - 5;
+      m.Y := FY + Random * 10 - 5;
+
+      m.VX := FVX + Random * 2 - 1;
+      m.VY := FVY + Random * 2 - 1;
+
+      m.R := Random * 360;
+      PickUpableObjects.Add(m)
+    end;
+
+  end;
 end;
 
 procedure TAsteroid.Render;

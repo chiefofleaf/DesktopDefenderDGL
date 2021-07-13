@@ -43,7 +43,7 @@ begin
     mtIce: begin
       glBegin(GL_LINE_LOOP);
       //light blue
-      glColor3f(0.4, 1, 1);
+      glColor3f(0.8, 1, 1);
 
       //cube shape
       glVertex2f( 1, 1);

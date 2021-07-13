@@ -26,7 +26,10 @@ type
     property Z: Single read FZ write FZ;
     property R: Single read FR write FR;
 
-    procedure Reset;
+    property VX: Single read FVX write FVX;
+    property VY: Single read FVY write FVY;
+
+    procedure Reset; virtual;
 
     procedure Update(DT: Double); override;
     procedure Render; override;

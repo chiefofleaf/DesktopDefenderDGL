@@ -5,7 +5,8 @@ interface
 uses
   Generics.Collections,
 
-  LibPlayer, LibRenderableObject, LibShot, LibAsteroid, LibShared, LibMaterial;
+  LibPlayer, LibRenderableObject, LibDestroyableObject, LibShot, LibAsteroid,
+  LibShared, LibMaterial;
 
 type
   TBiomeType = (btRocky, btNotAsRocky, btMinerally);
@@ -47,7 +48,7 @@ type
     FPlayer: TPlayer;
     FPlayers: TObjectList<TPlayer>;
     FShots: TObjectList<TShot>;
-    FAsteroids: TObjectList<TAsteroid>;
+    FAsteroids: TObjectList<TDestroyableObject>;
     FMaterials: TObjectList<TMaterial>;
 
     FWorldGenerator: TWorldGenerator;
@@ -76,7 +77,7 @@ constructor TObjectHandler.Create;
 begin
   FPlayers := TObjectList<TPlayer>.Create(True);
   FShots := TObjectList<TShot>.Create(True);
-  FAsteroids := TObjectList<TAsteroid>.Create(True);
+  FAsteroids := TObjectList<TDestroyableObject>.Create(True);
   FMaterials := TObjectList<TMaterial>.Create(True);
 
   FPlayer := TPlayer.Create;
@@ -271,12 +272,13 @@ var
     p: TPlayer;
     a: TAsteroid;
     s: TShot;
+    m: TMaterial;
   begin
     //check if players were hit
     for i := FPlayers.Count - 1 downto 0 do begin
       for j := FAsteroids.Count - 1 downto 0 do begin
         p := FPlayers[i];
-        a := FAsteroids[j];
+        a := FAsteroids[j] as TAsteroid;
 
         if DidCollide(p.X, p.Y, a.X, a.Y, a.CollisionRadius) then begin
           ResetGame;
@@ -289,14 +291,30 @@ var
     for i := FShots.Count - 1 downto 0 do begin
       for j := FAsteroids.Count - 1 downto 0 do begin
         s := FShots[i];
-        a := FAsteroids[j];
+        a := FAsteroids[j] as TAsteroid;
 
         if DidCollide(s.X, s.Y, a.X, a.Y, a.CollisionRadius) then begin
+          a.GenerateLoot(FAsteroids, FMaterials);
+
           if a.Damage(s.Dmg) then
             FAsteroids.Delete(j);
 
           FShots.Delete(i);
           Break;
+        end;
+      end;
+    end;
+
+    //check if picked up any pickupables
+    for i := FPlayers.Count - 1 downto 0 do begin
+      for j := FMaterials.Count - 1 downto 0 do begin
+        p := FPlayers[i];
+        m := FMaterials[j];
+
+        if DidCollide(p.X, p.Y, m.X, m.Y, p.PickupRadius) then begin
+          p.Inventory.PickUp(m.MaterialType);
+
+          FMaterials.Delete(j);
         end;
       end;
     end;

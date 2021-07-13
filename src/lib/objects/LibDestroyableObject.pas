@@ -3,6 +3,8 @@ unit LibDestroyableObject;
 interface
 
 uses
+  Generics.Collections,
+
   LibRenderableObject, LibMaterial;
 
 type
@@ -18,8 +20,9 @@ type
 
     //Decreases FHP by Dmg and returns whether object has <= 0 HP
     function Damage(Dmg: Single): Boolean; virtual;
-    //Returns array of Elements the object dropped
-    function GenerateLoot: TMaterialArray; virtual; abstract;
+    //adds dropped things to passed lists
+    procedure GenerateLoot(DestroyableObjects: TObjectList<TDestroyableObject>;
+                           PickUpableObjects: TObjectList<TMaterial>); virtual; abstract;
 
     constructor Create(HPMax: Single; CollisionRadius: Single); virtual;
   end;

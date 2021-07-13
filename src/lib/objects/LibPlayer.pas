@@ -5,7 +5,7 @@ interface
 uses
   Generics.Collections,
 
-  LibRenderableObject, LibShot;
+  LibRenderableObject, LibShot, LibMaterial;
 
 type
   TThrusterType = (ttMain, ttSpinL, ttSpinR, ttYSpinL, ttYSpinR, tt0);
@@ -33,19 +33,43 @@ type
     procedure Render;
   end;
 
+  TInventory = class
+  private
+    arr: array[TMaterialType] of Integer;
+  public
+    constructor Create;
+
+    procedure Reset;
+
+    function GetCountOfMat(mt: TMaterialType): Integer;
+
+    //adds count of given element to inventory and returns new count
+    function PickUp(mt: TMaterialType; count: Integer = 1): Integer;
+
+    //drop count of given element from inventory and returns new count
+    function Drop(mt: TMaterialType; count: Integer = 1): Integer;
+  end;
+
   TPlayer = class(TWorldObject)
   private
+    FInventory: TInventory;
+    FPickupRadius: Double;
+
     FCooldown: Double;
     FPlumeHandler: TPlumeHandler;
 
     FYSpinV, FYSpin: Single;
   public
+    property PickupRadius: Double read FPickupRadius;
+    property Inventory: TInventory read FInventory;
+
     constructor Create;
     destructor Destroy; override;
 
     procedure Thrust(ThrusterType: TThrusterType; DT: Single);
     function Shoot: TShot;
 
+    procedure Reset; override;
 
     procedure Render; override;
     procedure Update(DT: Double); override;
@@ -117,12 +141,15 @@ end;
 
 constructor TPlayer.Create;
 begin
+  FPickupRadius := 2.5;
   FPlumeHandler := TPlumeHandler.Create;
+  FInventory := TInventory.Create;
 end;
 
 destructor TPlayer.Destroy;
 begin
   FPlumeHandler.Free;
+  FInventory.Free;
   inherited;
 end;
 
@@ -152,6 +179,15 @@ begin
 
   FPlumeHandler.Render;
 
+end;
+
+procedure TPlayer.Reset;
+var
+  mt: TMaterialType;
+begin
+  inherited;
+
+  FInventory.Reset;
 end;
 
 { TPlumeHandler }
@@ -248,6 +284,39 @@ begin
   inherited;
 
   LifeSpan := LifeSpan - DT;
+end;
+
+{ TInventory }
+
+constructor TInventory.Create;
+begin
+  Reset;
+end;
+
+procedure TInventory.Reset;
+var
+  mt: TMaterialType;
+begin
+  for mt := Low(TMaterialType) to High(TMaterialType) do begin
+    arr[mt] := 0;
+  end;
+end;
+
+function TInventory.PickUp(mt: TMaterialType; count: Integer): Integer;
+begin
+  arr[mt] := arr[mt] + count;
+  Result := GetCountOfMat(mt);
+end;
+
+function TInventory.Drop(mt: TMaterialType; count: Integer): Integer;
+begin
+  arr[mt] := arr[mt] - count;
+  Result := GetCountOfMat(mt);
+end;
+
+function TInventory.GetCountOfMat(mt: TMaterialType): Integer;
+begin
+  Result := arr[mt];
 end;
 
 end.
