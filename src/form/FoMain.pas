@@ -6,11 +6,16 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
 
-  LibGame, Vcl.ExtCtrls;
+  LibGame, Vcl.ExtCtrls, Vcl.StdCtrls;
 
 type
   TfmMain = class(TForm)
     tmFPS: TTimer;
+    pnMain: TPanel;
+    pnGUI: TPanel;
+    Button1: TButton;
+    Button2: TButton;
+    CheckBox1: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -35,7 +40,7 @@ begin
   TransparentColor := DISPLAY_TRANSPARENT;
   TransparentColorValue := DISPLAY_TRANSPARENT_COLOR;
 
-  FGame := TGame.Create(Handle);
+  FGame := TGame.Create(pnMain.Handle);
   Application.OnIdle := FGame.GameLoop;
   FGame.Start;
 end;
@@ -58,6 +63,9 @@ begin
         WindowState := wsNormal;
         BorderStyle := bsSizeable;
       end;
+    end;
+    VK_F1: begin
+      pnGUI.Visible := not pnGUI.Visible;
     end;
   end;
 end;
